@@ -11,8 +11,8 @@ CREATE TABLE waz_biens
    bi_id INT(10) NOT NULL AUTO_INCREMENT COMMENT 'Identifiant / Clé primaire',
    bi_type SMALLINT(6) NOT NULL COMMENT 'Type de bien',
    bi_pieces TINYINT (3) NOT NULL  COMMENT 'Nombre de pièces' ,
-   bi_ref VARCHAR(10) NOT NULL COMMENT 'Référence de l''annonce',
-   bi_description mediumtext NOT NULL,
+   bi_ref CHAR(11) NOT NULL COMMENT 'Référence de l''annonce',
+   bi_description TEXT NOT NULL,
    bi_local VARCHAR(100) NOT NULL,
    bi_surf_habitable INT (11) NOT NULL COMMENT 'Surface habitable (mètres carrés)',
    bi_surf_totale INT (11) NOT NULL COMMENT 'Surface totale/terrain (mètres carrés)',
@@ -77,7 +77,7 @@ CREATE TABLE waz_employes
 
 -- Structure de la table waz_utilisateurs
 
-CREATE TABLE waz_utilisateurs
+CREATE TABLE waz_internautes
 (
    ut_id INT(10) NOT NULL AUTO_INCREMENT,
    ut_nom VARCHAR(30),
@@ -86,6 +86,7 @@ CREATE TABLE waz_utilisateurs
    ut_telephone VARCHAR(50),
    ut_email VARCHAR(50),
    ut_pays VARCHAR(50),
+   est_active BOOLEAN NOT NULL COMMENT '1=active 0=non active',
    PRIMARY KEY(ut_id)
 );
 
@@ -99,14 +100,26 @@ CREATE TABLE waz_annonces
    an_date_disponibilite DATE NOT NULL,
    an_offre CHAR(1) NOT NULL COMMENT 'Type d''offre. Lettres A, L ou V.',
    an_nbre_vues SMALLINT(6) NOT NULL,
-   an_ajout_annonces DATE NOT NULL,
-   an_modif_annonces DATETIME DEFAULT NULL,
-   an_titre_ VARCHAR(255) NOT NULL,
+   an_date_ajout DATE NOT NULL,
+   an_date_modif DATETIME DEFAULT NULL,
+   an_titre VARCHAR(255) NOT NULL,
    bi_id INT(10) NOT NULL,
    PRIMARY KEY(an_id),
    FOREIGN KEY(bi_id) REFERENCES waz_biens(bi_id)
 );
 
+-- Structure de la table waz_commentaire
+
+CREATE TABLE waz_commentaire
+(
+   co_id  INT(10) NOT NULL AUTO_INCREMENT,
+   co_avis TEXT DEFAULT NULL,
+   co_notes CHAR(1) DEFAULT NULL,
+   co_date_ajout DATETIME NOT NULL,
+   ut_id INT(10) ,
+   PRIMARY KEY(co_id),
+   FOREIGN KEY(ut_id) REFERENCES waz_internautes(ut_id)
+);
 -- Structure de la table waz_annonces
 
 CREATE TABLE composer
@@ -115,22 +128,8 @@ CREATE TABLE composer
    opt_id INT (10),
    PRIMARY KEY(bi_id, opt_id),
    FOREIGN KEY(bi_id) REFERENCES waz_biens(bi_id),
-   FOREIGN KEY(opt_id) REFERENCES waz_options(opt_id)
 );
 
--- Structure de la table waz_commenter
-
-CREATE TABLE commenter
-(
-   ut_id INT(10),
-   an_id INT(10),
-   date_ajout DATETIME NOT NULL,
-   commentaire TEXT NOT NULL,
-   date_modification DATETIME NOT NULL,
-   PRIMARY KEY(ut_id, an_id),
-   FOREIGN KEY(ut_id) REFERENCES waz_utilisateurs(ut_id),
-   FOREIGN KEY(an_id) REFERENCES waz_annonces(an_id)
-);
 
 -- Structure de la table waz_negocier
 
@@ -150,7 +149,17 @@ CREATE TABLE negocier
    FOREIGN KEY(an_id) REFERENCES waz_annonces(an_id)
 );
 
-
+-- Structure de la table waz_contacter
+CREATE TABLE waz_contacter
+(
+   emp_id INT(10),
+   ut_id INT(10),
+   sujet VARCHAR(50) NOT NULL,
+   question TEXT NOT NULL,
+   PRIMARY KEY(emp_id, ut_id),
+   FOREIGN KEY(emp_id) REFERENCES waz_employes(emp_id),
+   FOREIGN KEY(ut_id) REFERENCES waz_internautes(ut_id)
+);
 
 
 
