@@ -79,15 +79,14 @@ CREATE TABLE waz_employes
 
 CREATE TABLE waz_internautes
 (
-   ut_id INT(10) NOT NULL AUTO_INCREMENT,
-   ut_nom VARCHAR(30),
-   ut_prenom VARCHAR(30),
-   ut_adresse VARCHAR(50),
-   ut_telephone VARCHAR(50),
-   ut_email VARCHAR(50),
-   ut_pays VARCHAR(50),
-   est_active BOOLEAN NOT NULL COMMENT '1=active 0=non active',
-   PRIMARY KEY(ut_id)
+   in_id INT(10) NOT NULL AUTO_INCREMENT,
+   in_nom VARCHAR(30),
+   in_prenom VARCHAR(30),
+   in_adresse VARCHAR(50),
+   in_telephone VARCHAR(50),
+   in_email VARCHAR(50),
+   in_pays VARCHAR(50),
+   PRIMARY KEY(in_id)
 );
 
 -- Structure de la table waz_annonces
@@ -95,7 +94,8 @@ CREATE TABLE waz_internautes
 CREATE TABLE waz_annonces
 (
    an_id INT(10) NOT NULL AUTO_INCREMENT,
-   an_prix INT(10) NOT NULL COMMENT 'Prix en euros',
+   an_prix DECIMAL(8,2) NOT NULL COMMENT 'Prix en euros',
+   est_active BOOLEAN NOT NULL COMMENT '1=active 0=non active',
    an_ref CHAR(7) NOT NULL COMMENT 'Référence de l''annonce',
    an_date_disponibilite DATE NOT NULL,
    an_offre CHAR(1) NOT NULL COMMENT 'Type d''offre. Lettres A, L ou V.',
@@ -116,36 +116,37 @@ CREATE TABLE waz_commentaire
    co_avis TEXT DEFAULT NULL,
    co_notes CHAR(1) DEFAULT NULL,
    co_date_ajout DATETIME NOT NULL,
-   ut_id INT(10) ,
+   in_id INT(10) ,
    PRIMARY KEY(co_id),
-   FOREIGN KEY(ut_id) REFERENCES waz_internautes(ut_id)
+   FOREIGN KEY(in_id) REFERENCES waz_internautes(in_id)
 );
 -- Structure de la table waz_annonces
 
-CREATE TABLE composer
+CREATE TABLE waz_composer
 (
    bi_id INT (10) ,
    opt_id INT (10),
    PRIMARY KEY(bi_id, opt_id),
    FOREIGN KEY(bi_id) REFERENCES waz_biens(bi_id),
+   FOREIGN KEY(opt_id) REFERENCES waz_options(opt_id)
 );
 
 
 -- Structure de la table waz_negocier
 
-CREATE TABLE negocier
+CREATE TABLE waz_negocier
 (
    emp_id INT(10),
-   ut_id INT(10),
+   in_id INT(10),
    an_id INT(10),
    est_conclu BOOLEAN NOT NULL,
    montant_transaction DECIMAL(9,2) NOT NULL,
    date_debut_transaction DATE NOT NULL,
    date_transaction_fin DATE DEFAULT NULL,
    date_dernier_contact DATE NOT NULL,
-   PRIMARY KEY(emp_id, ut_id, an_id),
+   PRIMARY KEY(emp_id, in_id, an_id),
    FOREIGN KEY(emp_id) REFERENCES waz_employes(emp_id),
-   FOREIGN KEY(ut_id) REFERENCES waz_utilisateurs(ut_id),
+   FOREIGN KEY(in_id) REFERENCES waz_internautes(in_id),
    FOREIGN KEY(an_id) REFERENCES waz_annonces(an_id)
 );
 
@@ -153,12 +154,12 @@ CREATE TABLE negocier
 CREATE TABLE waz_contacter
 (
    emp_id INT(10),
-   ut_id INT(10),
+   in_id INT(10),
    sujet VARCHAR(50) NOT NULL,
    question TEXT NOT NULL,
-   PRIMARY KEY(emp_id, ut_id),
+   PRIMARY KEY(emp_id, in_id),
    FOREIGN KEY(emp_id) REFERENCES waz_employes(emp_id),
-   FOREIGN KEY(ut_id) REFERENCES waz_internautes(ut_id)
+   FOREIGN KEY(in_id) REFERENCES waz_internautes(in_id)
 );
 
 
